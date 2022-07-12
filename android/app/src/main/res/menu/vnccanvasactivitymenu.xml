@@ -55,4 +55,8 @@
         android:id="@+id/itemDisconnect"
         android:title="@string/disconnect"/>
 
+    <item
+        android:id="@+id/itemToggle3D"
+        android:title="@string/toggle_3Dmode"/>
+
 </menu>

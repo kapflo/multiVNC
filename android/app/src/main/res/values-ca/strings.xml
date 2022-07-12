@@ -20,6 +20,8 @@
 <string name="toggle_pointer_highlight">Canviar el ressaltat del punter</string>
 <string name="toggle_keyboard">Canviar el teclat</string>
 
+<string name="toggle_3Dmode">"Toggle 3D Mode"</string>
+
 <string name="export_settings">Exportar</string>
 <string name="database_error_open">¡Error en obrir la base de dades!</string>
 <string name="import_export_settings">Importar/Exportar Configuració</string>
