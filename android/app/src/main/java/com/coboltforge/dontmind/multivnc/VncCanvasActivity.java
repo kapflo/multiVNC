@@ -22,7 +22,6 @@ package com.coboltforge.dontmind.multivnc;
 
 import java.util.List;
 
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -496,6 +495,12 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			database.getConnectionDao().save(connection);
 			Toast.makeText(this, getString(R.string.bookmark_saved), Toast.LENGTH_SHORT).show();
 			return true;
+
+		// create event when button is pressed, maybe add shaders here or in VNCCanvas Activity
+		case R.id.itemToggle3D:
+			toggle3Dmode();
+			return true;
+
 		case R.id.itemAbout:
 			Intent intent = new Intent (this, AboutActivity.class);
 			this.startActivity(intent);
@@ -522,6 +527,12 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	// create 3D toggle method
+	private void toggle3Dmode() {
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://webbacklight.web.app/?mode=3D"));
+		startActivity(browserIntent);
 	}
 
 	MetaKeyBean lastSentKey;
