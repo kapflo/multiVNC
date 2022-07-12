@@ -40,8 +40,8 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/fab"
-		android:layout_width="25dp"
-		android:layout_height="32dp"
+		android:layout_width="20dp"
+		android:layout_height="20dp"
 		android:layout_gravity="top|end"
 		android:layout_margin="16dp"
 		android:adjustViewBounds="false"
