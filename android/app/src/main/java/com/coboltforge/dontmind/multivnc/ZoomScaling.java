@@ -47,7 +47,7 @@ class ZoomScaling {
 	}
 	
 	void zoomIn() {
-		updateScale(currentScale + 0.25f);
+		updateScale(currentScale + 0.3333333f);
 	}
 
 	float getScale() {
@@ -55,7 +55,7 @@ class ZoomScaling {
 	}
 
 	void zoomOut() {
-		updateScale(currentScale - 0.25f);
+		updateScale(currentScale - 0.3333333f);
 	}
 
 	void adjust(float scaleFactor, float fx, float fy) {
