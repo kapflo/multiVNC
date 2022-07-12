@@ -500,7 +500,9 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		case R.id.itemToggle3D:
 			toggle3Dmode();
 			return true;
-
+		case R.id.itemToggle2D:
+			toggle2Dmode();
+			return true;
 		case R.id.itemAbout:
 			Intent intent = new Intent (this, AboutActivity.class);
 			this.startActivity(intent);
@@ -534,6 +536,9 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://webbacklight.web.app/?mode=3D"));
 		startActivity(browserIntent);
 	}
+
+	// deactivate 3D mode, use original shader
+	private void toggle2Dmode() {}
 
 	MetaKeyBean lastSentKey;
 
