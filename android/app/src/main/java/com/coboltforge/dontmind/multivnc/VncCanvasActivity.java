@@ -28,7 +28,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.text.ClipboardManager;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,14 +52,19 @@ import android.widget.Toast;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
 
+import com.leia.android.lights.LeiaDisplayManager;
+import com.leia.android.lights.LeiaDisplayManager.BacklightMode;
+import com.leia.android.lights.LeiaSDK;
+import com.leia.android.lights.SimpleDisplayQuery;
+import com.leia.android.lights.BacklightModeListener;
+
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 @SuppressWarnings("deprecation")
 public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
 
-
 	private final static String TAG = "VncCanvasActivity";
-
 
 	VncCanvas vncCanvas;
 	VncDatabase database;

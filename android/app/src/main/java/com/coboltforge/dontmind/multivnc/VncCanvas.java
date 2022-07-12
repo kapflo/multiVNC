@@ -273,7 +273,6 @@ public class VncCanvas extends GLSurfaceView {
 
 	}
 
-
 	/**
 	 * Constructor used by the inflation apparatus
 	 * @param context
