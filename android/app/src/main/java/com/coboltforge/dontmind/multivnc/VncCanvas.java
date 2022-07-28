@@ -47,13 +47,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.Toast;
-
 
 public class VncCanvas extends GLSurfaceView {
 	static {
@@ -63,7 +63,6 @@ public class VncCanvas extends GLSurfaceView {
 	private final static String TAG = "VncCanvas";
 
 	ZoomScaling scaling;
-
 
 	// Runtime control flags
 	private AtomicBoolean showDesktopInfo = new AtomicBoolean(true);
@@ -101,7 +100,6 @@ public class VncCanvas extends GLSurfaceView {
 
 	private MouseScrollRunnable scrollRunnable;
 
-
 	// framebuffer coordinates of mouse pointer, Available to activity
 	int mouseX, mouseY;
 
@@ -111,7 +109,6 @@ public class VncCanvas extends GLSurfaceView {
 	 */
 	int absoluteXPosition = 0, absoluteYPosition = 0;
 
-
 	/*
 		native drawing functions
 	*/
@@ -119,7 +116,6 @@ public class VncCanvas extends GLSurfaceView {
     private static native void on_surface_changed(int width, int height);
     private static native void on_draw_frame();
 	private static native void prepareTexture(long rfbClient);
-
 
 	private class VNCGLRenderer implements GLSurfaceView.Renderer {
 
@@ -193,9 +189,11 @@ public class VncCanvas extends GLSurfaceView {
 			// pbuffer: http://blog.shayanjaved.com/2011/05/13/android-opengl-es-2-0-render-to-texture/
 
 			try{
+				// glClear, clear buffers to preset values
+				// glClear: https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-				if(vncConn.getFramebufferWidth() >0 && vncConn.getFramebufferHeight() > 0) {
+				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
 					vncConn.lockFramebuffer();
 					prepareTexture(vncConn.rfbClient);
 					vncConn.unlockFramebuffer();
@@ -212,6 +210,7 @@ public class VncCanvas extends GLSurfaceView {
 				 * is smaller than our viewer window.
 				 *
 				 */
+				// (logical comparison) ? (trigges if true) : (else triggers if false)
 				mTexCrop[0] = absoluteXPosition >= 0 ? absoluteXPosition : 0; // don't let this be <0
 				mTexCrop[1] = absoluteYPosition >= 0 ? (int)(absoluteYPosition + VncCanvas.this.getHeight() / getScale()) : vncConn.getFramebufferHeight();
 				mTexCrop[2] = (int) (VncCanvas.this.getWidth() < vncConn.getFramebufferWidth()*getScale() ? VncCanvas.this.getWidth() / getScale() : vncConn.getFramebufferWidth());
@@ -238,7 +237,6 @@ public class VncCanvas extends GLSurfaceView {
 				((GL11Ext) gl).glDrawTexfOES(x, y, 0, w, h);
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
-
 
 				/*
 				 * do pointer highlight overlay
@@ -569,6 +567,7 @@ public class VncCanvas extends GLSurfaceView {
 
 		}
 	}
+
 
 	public void disableRepaints() {
 		repaintsEnabled = false;

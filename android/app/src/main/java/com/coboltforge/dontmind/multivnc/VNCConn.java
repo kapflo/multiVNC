@@ -9,6 +9,7 @@
 package com.coboltforge.dontmind.multivnc;
 
 import java.net.Inet6Address;
+// java.net.InetAddress
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -304,7 +305,7 @@ public class VNCConn {
 						}
 					if(ev.fur != null)
 						try {
-							// rfb.writeFramebufferUpdateRequest(ev.fur.x, ev.fur.y, ev.fur.w, ev.fur.h, ev.fur.incremental);
+//							 rfb.writeFramebufferUpdateRequest(ev.fur.x, ev.fur.y, ev.fur.w, ev.fur.h, ev.fur.incremental);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -326,7 +327,6 @@ public class VNCConn {
     		if(Utils.DEBUG()) Log.d(TAG, "ClientToServerThread done!");
 
     	}
-
 
 		private boolean sendPointerEvent(OutputEvent.PointerEvent pe) {
 			return rfbSendPointerEvent(pe.x, pe.y, pe.mask);
@@ -639,7 +639,6 @@ public class VNCConn {
 		rfbSetFramebufferUpdatesEnabled(framebufferUpdatesEnabled);
 		return framebufferUpdatesEnabled;
 	}
-
 
 	void sendFramebufferUpdateRequest(int x, int y, int w, int h, boolean incremental) {
 		if(framebufferUpdatesEnabled)

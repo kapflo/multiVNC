@@ -58,7 +58,6 @@ import com.leia.android.lights.LeiaSDK;
 import com.leia.android.lights.SimpleDisplayQuery;
 import com.leia.android.lights.BacklightModeListener;
 
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 @SuppressWarnings("deprecation")
@@ -224,6 +223,9 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		/*
 		 * Setup canvas and conn.
 		 */
+		// this is a refernece to the current object; case of inheritance (because class extends activity)), implicit casting
+		// VncCanvasActivity is a subclass and activity is parent class
+		// Activity class is super class of VncCanvasActivity
 		VNCConn conn = new VNCConn();
 		vncCanvas.initializeVncCanvas(this, inputHandler, conn); // add conn to canvas
 		conn.setCanvas(vncCanvas); // add canvas to conn. be sure to call this before init!
@@ -233,7 +235,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 				setModes();
 			}
 		});
-
 
 
 		zoomer.setOnZoomInClickListener(new View.OnClickListener() {
@@ -500,13 +501,18 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			Toast.makeText(this, getString(R.string.bookmark_saved), Toast.LENGTH_SHORT).show();
 			return true;
 
+
 		// create event when button is pressed, maybe add shaders here or in VNCCanvas Activity
 		case R.id.itemToggle3D:
+			//vnccanvas.toggle3D ... -> implement method in vnccanvas which selects a different shader/rendering
 			toggle3Dmode();
 			return true;
 		case R.id.itemToggle2D:
+			//vnccanvas ... go back to normal rendering
 			toggle2Dmode();
 			return true;
+
+
 		case R.id.itemAbout:
 			Intent intent = new Intent (this, AboutActivity.class);
 			this.startActivity(intent);
