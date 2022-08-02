@@ -55,6 +55,7 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.Toast;
 
+// Implementation of SurfaceView that uses the dedicated surface for displaying OpenGL rendering
 public class VncCanvas extends GLSurfaceView {
 	static {
 		System.loadLibrary("vnccanvas");

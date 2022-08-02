@@ -373,7 +373,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			((MetaKeyDialog) dialog).setConnection(connection);
 	}
 
-
 	@Override
 	protected void onStop() {
 		vncCanvas.disableRepaints();
@@ -385,7 +384,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		vncCanvas.enableRepaints();
 		super.onRestart();
 	}
-
 
 	@Override
 	protected void onPause() {

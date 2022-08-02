@@ -23,5 +23,4 @@ public class GL4VInterlacing {
     public GL4Interlacing() {
 
     }
-
 }

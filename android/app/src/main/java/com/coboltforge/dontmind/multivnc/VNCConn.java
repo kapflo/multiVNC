@@ -5,11 +5,11 @@
  * Copyright (C) 2012 Christian Beier <dontmind@freeshell.org>
  */
 
-
 package com.coboltforge.dontmind.multivnc;
 
 import java.net.Inet6Address;
-// java.net.InetAddress
+// java.net.InetAddress - class represents an IP address
+// is either a 32-bit or 128-bit unsigned number used by IP.
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.util.Log;
 import android.view.KeyEvent;
 import androidx.annotation.Keep;
-
 
 public class VNCConn {
 	static {
@@ -72,8 +71,6 @@ public class VNCConn {
     public static final int MOUSE_BUTTON_RIGHT = 4;
     public static final int MOUSE_BUTTON_SCROLL_UP = 8;
     public static final int MOUSE_BUTTON_SCROLL_DOWN = 16;
-
-
 
     private class OutputEvent {
 
