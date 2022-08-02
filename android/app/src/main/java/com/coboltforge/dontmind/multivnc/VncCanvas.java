@@ -88,6 +88,7 @@ public class VncCanvas extends GLSurfaceView {
 	private PointerInputHandler inputHandler;
 
 	private VNCGLRenderer glRenderer;
+	//private VNCGLquadviewRenderer glRenderer3D;
 
 	//whether to do pointer highlighting
 	boolean doPointerHighLight = true;
@@ -281,15 +282,30 @@ public class VncCanvas extends GLSurfaceView {
 	 * Constructor used by the inflation apparatus
 	 * @param context
 	 */
-	public VncCanvas(final Context context, AttributeSet attrs)
+
+	//TODO: switch between modes - 3D mode, find out what this does??
+	//if toggle true: normal renderer, else 3D
+	public VncCanvas(final Context context, AttributeSet attrs, boolean toggle)
 	{
 		super(context, attrs);
 		scrollRunnable = new MouseScrollRunnable();
 
 		setFocusable(true);
 
-		glRenderer = new VNCGLRenderer();
-		setRenderer(glRenderer);
+		// if true, use normal renderer, else use 3D mode
+		/*if (toggle)
+		{*/
+			glRenderer = new VNCGLRenderer();
+			setRenderer(glRenderer);
+		//}
+
+		/*else
+		{
+			glRenderer3D = new VNCGLquadviewRenderer();
+			setRenderer(glRenderer3D);
+		}*/
+
+
 		// only render upon request
 		setRenderMode(RENDERMODE_WHEN_DIRTY);
 
@@ -299,8 +315,10 @@ public class VncCanvas extends GLSurfaceView {
 		Log.d(TAG, "Changed prio from " + oldprio + " to " + android.os.Process.getThreadPriority(android.os.Process.myTid()));
 	}
 
+/*
+
 	//TODO: QuadView renderer, implement shaders for interlacing
-	private class VNCGL4VRenderer implements GLSurfaceView.Renderer {
+	private class VNCGLquadviewRenderer implements GLSurfaceView.Renderer {
 
 		int[] textureIDs = new int[1];   // Array for 1 texture-ID
 		private int[] mTexCrop = new int[4];
@@ -316,23 +334,29 @@ public class VncCanvas extends GLSurfaceView {
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-			/*
+			*/
+/*
 			 * By default, OpenGL enables features that improve quality but reduce
 			 * performance. One might want to tweak that especially on software
 			 * renderer.
-			 */
+			 *//*
+
 			gl.glDisable(GL10.GL_DITHER); // Disable dithering for better performance
 			gl.glDisable(GL10.GL_LIGHTING);
 			gl.glDisable(GL10.GL_DEPTH_TEST);
 
-			/*
+			*/
+/*
 			 * alpha blending has to be enabled manually!
-			 */
+			 *//*
+
 			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-			/*
+			*/
+/*
 			 * setup texture stuff
-			 */
+			 *//*
+
 			// Enable 2d textures
 			gl.glEnable(GL10.GL_TEXTURE_2D);
 			// Generate texture-ID array
@@ -381,7 +405,8 @@ public class VncCanvas extends GLSurfaceView {
 					vncConn.unlockFramebuffer();
 				}
 
-				/*
+				*/
+/*
 				 * The crop rectangle is given as Ucr, Vcr, Wcr, Hcr.
 				 * That is, "left"/"bottom"/width/height, although you can
 				 * also have negative width and height to flip the image.
@@ -391,7 +416,8 @@ public class VncCanvas extends GLSurfaceView {
 				 * If absolute[XY]Position are negative that means the framebuffer
 				 * is smaller than our viewer window.
 				 *
-				 */
+				 *//*
+
 				// (logical comparison) ? (trigges if true) : (else triggers if false)
 				mTexCrop[0] = absoluteXPosition >= 0 ? absoluteXPosition : 0; // don't let this be <0
 				mTexCrop[1] = absoluteYPosition >= 0 ? (int)(absoluteYPosition + VncCanvas.this.getHeight() / getScale()) : vncConn.getFramebufferHeight();
@@ -402,7 +428,8 @@ public class VncCanvas extends GLSurfaceView {
 
 				((GL11) gl).glTexParameteriv(GL10.GL_TEXTURE_2D, GL11Ext.GL_TEXTURE_CROP_RECT_OES, mTexCrop, 0);
 
-				/*
+				*/
+/*
 				 * Very fast, but very basic transforming: only transpose, flip and scale.
 				 * Uses the GL_OES_draw_texture extension to draw sprites on the screen without
 				 * any sort of projection or vertex buffers involved.
@@ -410,7 +437,8 @@ public class VncCanvas extends GLSurfaceView {
 				 * See http://www.khronos.org/registry/gles/extensions/OES/OES_draw_texture.txt
 				 *
 				 * All parameters in GL screen coordinates!
-				 */
+				 *//*
+
 				int x = (int) (VncCanvas.this.getWidth() < vncConn.getFramebufferWidth()*getScale() ? 0 : VncCanvas.this.getWidth()/2 - (vncConn.getFramebufferWidth()*getScale())/2);
 				int y = (int) (VncCanvas.this.getHeight() < vncConn.getFramebufferHeight()*getScale() ? 0 : VncCanvas.this.getHeight()/2 - (vncConn.getFramebufferHeight()*getScale())/2);
 				int w = (int) (VncCanvas.this.getWidth() < vncConn.getFramebufferWidth()*getScale() ? VncCanvas.this.getWidth(): vncConn.getFramebufferWidth()*getScale());
@@ -420,9 +448,11 @@ public class VncCanvas extends GLSurfaceView {
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
 
-				/*
+				*/
+/*
 				 * do pointer highlight overlay
-				 */
+				 *//*
+
 				if(doPointerHighLight) {
 					gl.glEnable(GL10.GL_BLEND);
 					int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
@@ -452,28 +482,7 @@ public class VncCanvas extends GLSurfaceView {
 		}
 
 	}
-
-	//TODO: switch between modes - 3D mode
-	//overload constructor
-	public VncCanvas(final Context context, AttributeSet attrs, int toggle)
-	{
-		super(context, attrs);
-		scrollRunnable = new MouseScrollRunnable();
-
-		setFocusable(true);
-
-		glRenderer = new VNCGL4VRenderer();
-		setRenderer(glRenderer);
-		// only render upon request
-		setRenderMode(RENDERMODE_WHEN_DIRTY);
-
-		int oldprio = android.os.Process.getThreadPriority(android.os.Process.myTid());
-		// GIVE US MAGIC POWER, O GREAT FAIR SCHEDULER!
-		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DISPLAY);
-		Log.d(TAG, "Changed prio from " + oldprio + " to " + android.os.Process.getThreadPriority(android.os.Process.myTid()));
-	}
-
-
+*/
 
 	/**
 	 * Create a view showing a VNC connection
