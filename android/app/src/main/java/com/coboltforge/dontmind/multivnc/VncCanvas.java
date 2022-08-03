@@ -131,6 +131,8 @@ public class VncCanvas extends GLSurfaceView {
 	    private int[] mTexCrop = new int[4];
 	    GLShape circle;
 
+		// called when the surface is created of recreated
+		// called when the rendering thread starts and whenever the EGL context is lost
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
@@ -184,11 +186,11 @@ public class VncCanvas extends GLSurfaceView {
 			gl.glLoadIdentity();                 // Reset projection matrix
 			gl.glOrthox(0, width, height, 0, 0, 100);
 
-
 			gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix
 			gl.glLoadIdentity();                 // Reset
 		}
 
+		// called to draw the current frame
 		@Override
 		public void onDrawFrame(GL10 gl) {
 
@@ -199,6 +201,7 @@ public class VncCanvas extends GLSurfaceView {
 				// glClear, clear buffers to preset values
 				// glClear: https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
 
 				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
 					vncConn.lockFramebuffer();
@@ -304,7 +307,6 @@ public class VncCanvas extends GLSurfaceView {
 			glRenderer3D = new VNCGLquadviewRenderer();
 			setRenderer(glRenderer3D);
 		}*/
-
 
 		// only render upon request
 		setRenderMode(RENDERMODE_WHEN_DIRTY);

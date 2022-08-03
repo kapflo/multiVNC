@@ -60,6 +60,7 @@ import com.leia.android.lights.BacklightModeListener;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+// interface definition for a callback to be invoked when a menu item is clicked
 @SuppressWarnings("deprecation")
 public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
 
@@ -84,6 +85,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 
 	private ClipboardManager mClipboardManager;
 
+	// Initialize the Activity
 	@SuppressLint("ShowToast")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,7 +141,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		database = VncDatabase.getInstance(this);
 
 		mClipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-
 
 		inputHandler = new PointerInputHandler(this);
 		inputHandler.init();
@@ -223,7 +224,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		/*
 		 * Setup canvas and conn.
 		 */
-		// this is a refernece to the current object; case of inheritance (because class extends activity)), implicit casting
+		// this is a reference to the current object; case of inheritance (because class extends activity)), implicit casting
 		// VncCanvasActivity is a subclass and activity is parent class
 		// Activity class is super class of VncCanvasActivity
 		VNCConn conn = new VNCConn();
