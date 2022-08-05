@@ -20,11 +20,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
 public class AboutActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
+		// keyword super refers to superclass (parent) objects, used to call superclass methods and access the superclass constructor
+		// eliminates confusion between superclasses and subclasses that have methods with the same name
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 

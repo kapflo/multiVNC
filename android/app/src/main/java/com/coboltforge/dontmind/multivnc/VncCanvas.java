@@ -70,6 +70,8 @@ public class VncCanvas extends GLSurfaceView {
 	ZoomScaling scaling;
 
 	// Runtime control flags
+	// AtomicBoolean = A boolean that may be updated atomically
+	// Atomic: indivisible, unchangeable, whole irreducible (generally as a concept)
 	private AtomicBoolean showDesktopInfo = new AtomicBoolean(true);
 	private boolean repaintsEnabled = true;
 
@@ -78,6 +80,7 @@ public class VncCanvas extends GLSurfaceView {
 	 */
 	boolean cameraButtonDown = false;
 
+	//
 	public VncCanvasActivity activity;
 
 	// VNC protocol connection
@@ -85,6 +88,7 @@ public class VncCanvas extends GLSurfaceView {
 
 	public Handler handler = new Handler();
 
+	// public class PointerInputHandler extends GestureDetector.SimpleOnGestureListener implements ScaleGestureDetector.OnScaleGestureListener
 	private PointerInputHandler inputHandler;
 
 	private VNCGLRenderer glRenderer;
@@ -202,8 +206,10 @@ public class VncCanvas extends GLSurfaceView {
 				// glClear: https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-
 				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
+					// bitmapDataPixelsLock.lock() & .unlock()
+					// Bitmap: Object used to work with images defined by pixel data
+					// import java.util.concurrent.locks.ReentrantLock;
 					vncConn.lockFramebuffer();
 					prepareTexture(vncConn.rfbClient);
 					vncConn.unlockFramebuffer();
