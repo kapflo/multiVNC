@@ -210,6 +210,7 @@ public class VncCanvas extends GLSurfaceView {
 					// bitmapDataPixelsLock.lock() & .unlock()
 					// Bitmap: Object used to work with images defined by pixel data
 					// import java.util.concurrent.locks.ReentrantLock;
+					//
 					vncConn.lockFramebuffer();
 					prepareTexture(vncConn.rfbClient);
 					vncConn.unlockFramebuffer();
