@@ -158,7 +158,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		fabMenu.inflate(R.menu.vnccanvasactivitymenu);
 		fabMenu.setOnMenuItemClickListener(this);
 
-
 		/*
 		 * Setup connection bean.
 		 */
@@ -540,14 +539,19 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		return super.onOptionsItemSelected(item);
 	}
 
+	// TODO: call for change of fragment shader (implement in vncCanvas)
 	// create 3D toggle method
 	private void toggle3Dmode() {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://webbacklight.web.app/?mode=3D"));
 		startActivity(browserIntent);
+		vncCanvas.setQuadView(true);
 	}
 
+	// TODO: call for change of fragment shader (implement in vncCanvas)
 	// deactivate 3D mode, use original shader
-	private void toggle2Dmode() {}
+	private void toggle2Dmode() {
+		vncCanvas.setQuadView(false);
+	}
 
 	MetaKeyBean lastSentKey;
 

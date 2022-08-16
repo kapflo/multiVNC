@@ -97,6 +97,9 @@ public class VncCanvas extends GLSurfaceView {
 	//whether to do pointer highlighting
 	boolean doPointerHighLight = true;
 
+	//TODO: toggle quadview
+	boolean doQuadView = true;
+
 	/**
 	 * Current state of "mouse" buttons
 	 * Alt meta means use second mouse button
@@ -135,6 +138,10 @@ public class VncCanvas extends GLSurfaceView {
 	    private int[] mTexCrop = new int[4];
 	    GLShape circle;
 
+		// TODO: create a GLshapeQuadView object
+		// include toggle mechanism which determines whether GLshapeQuadView is accessed or not...
+		GLshapeQuadView quad;
+
 		// called when the surface is created of recreated
 		// called when the rendering thread starts and whenever the EGL context is lost
 		@Override
@@ -143,6 +150,10 @@ public class VncCanvas extends GLSurfaceView {
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceCreated()");
 
 			circle = new GLShape(GLShape.CIRCLE);
+
+			// TODO: create new quadview instance
+			// quadview = new GLshapeQuadView(GLshapeQuadView.QUAD); - either QUAD or NONE
+			quad = new GLshapeQuadView(GLshapeQuadView.QUAD);
 
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -207,13 +218,13 @@ public class VncCanvas extends GLSurfaceView {
 				gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
-					// bitmapDataPixelsLock.lock() & .unlock()
+					// lockFramebuffer = bitmapDataPixelsLock.lock() -> bitmapDataPixelsLock = ReentrantLock
 					// Bitmap: Object used to work with images defined by pixel data
-					// import java.util.concurrent.locks.ReentrantLock;
-					//
-					vncConn.lockFramebuffer();
-					prepareTexture(vncConn.rfbClient);
-					vncConn.unlockFramebuffer();
+					vncConn.lockFramebuffer(); // call reentrantLock: implements the lock interface and gives access to a shared resource (makes sure that the access is coordinated properly) - by default unfair (? - faster)
+
+					// native rfbClient (vncconn library)
+					prepareTexture(vncConn.rfbClient); // private static native void prepareTexture(long rfbClient); -> native drawing function (prob from vnccanvas library)
+					vncConn.unlockFramebuffer(); // makes the resource available to other threads again
 				}
 
 				/*
@@ -254,6 +265,13 @@ public class VncCanvas extends GLSurfaceView {
 				((GL11Ext) gl).glDrawTexfOES(x, y, 0, w, h);
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
+
+				if(doQuadView) {
+					gl.glEnable(GL10.GL_BLEND);
+					gl.glLoadIdentity();                 // Reset model-view matrix
+					// do something
+					quad.draw(gl);
+				}
 
 				/*
 				 * do pointer highlight overlay
@@ -768,13 +786,21 @@ public class VncCanvas extends GLSurfaceView {
 		}
 	}
 
-
 	public void disableRepaints() {
 		repaintsEnabled = false;
 	}
 
 	public void enableRepaints() {
 		repaintsEnabled = true;
+	}
+
+	//TODO: set quadview toggle
+	public void setQuadView(boolean enable) {
+		doQuadView = enable;
+	}
+
+	public final boolean getQuadView() {
+		return doQuadView;
 	}
 
 	public void setPointerHighlight(boolean enable) {
