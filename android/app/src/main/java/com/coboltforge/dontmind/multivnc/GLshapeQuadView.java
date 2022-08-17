@@ -27,7 +27,6 @@ public class GLshapeQuadView {
 
         float[] vertices = null;
 
-        // quadview interlacing
         if(kind == QUAD) {
             float[] v = {  // Vertices for the square
                     -1.0f, -1.0f,  0.0f,  // 0. left-bottom
@@ -38,7 +37,6 @@ public class GLshapeQuadView {
             vertices = v;
         }
 
-        // no quadview interlacing
         if(kind == NONE) {
             vertices = new float[circleSegments*3];
             int count = 0;
@@ -66,13 +64,11 @@ public class GLshapeQuadView {
         // Enable vertex-array and define its buffer
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
-        // QuadView interlacing -> accessing fragment shader for quadview interlacing
         if(kind == QUAD) {
             gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
             gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
         }
 
-        // dont change shader..
         if(kind == NONE) {
             gl.glVertexPointer (2, GL10.GL_FLOAT , 0, vertexBuffer);
             gl.glDrawArrays (GL10.GL_TRIANGLE_FAN, 0, circleSegments);

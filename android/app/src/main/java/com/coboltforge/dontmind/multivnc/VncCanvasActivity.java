@@ -544,13 +544,13 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 	private void toggle3Dmode() {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://webbacklight.web.app/?mode=3D"));
 		startActivity(browserIntent);
-		vncCanvas.setQuadView(true);
+		//vncCanvas.setQuadView(true);
 	}
 
 	// TODO: call for change of fragment shader (implement in vncCanvas)
 	// deactivate 3D mode, use original shader
 	private void toggle2Dmode() {
-		vncCanvas.setQuadView(false);
+		//vncCanvas.setQuadView(false);
 	}
 
 	MetaKeyBean lastSentKey;

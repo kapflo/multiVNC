@@ -98,7 +98,7 @@ public class VncCanvas extends GLSurfaceView {
 	boolean doPointerHighLight = true;
 
 	//TODO: toggle quadview
-	boolean doQuadView = true;
+	//boolean doQuadView = true;
 
 	/**
 	 * Current state of "mouse" buttons
@@ -140,7 +140,7 @@ public class VncCanvas extends GLSurfaceView {
 
 		// TODO: create a GLshapeQuadView object
 		// include toggle mechanism which determines whether GLshapeQuadView is accessed or not...
-		GLshapeQuadView quad;
+		// GLshapeQuadView quad;
 
 		// called when the surface is created of recreated
 		// called when the rendering thread starts and whenever the EGL context is lost
@@ -153,7 +153,7 @@ public class VncCanvas extends GLSurfaceView {
 
 			// TODO: create new quadview instance
 			// quadview = new GLshapeQuadView(GLshapeQuadView.QUAD); - either QUAD or NONE
-			quad = new GLshapeQuadView(GLshapeQuadView.QUAD);
+			//quad = new GLshapeQuadView(GLshapeQuadView.QUAD);
 
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -220,9 +220,9 @@ public class VncCanvas extends GLSurfaceView {
 				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
 					// lockFramebuffer = bitmapDataPixelsLock.lock() -> bitmapDataPixelsLock = ReentrantLock
 					// Bitmap: Object used to work with images defined by pixel data
-					vncConn.lockFramebuffer(); // call reentrantLock: implements the lock interface and gives access to a shared resource (makes sure that the access is coordinated properly) - by default unfair (? - faster)
-
+					// call reentrantLock: implements the lock interface and gives access to a shared resource (makes sure that the access is coordinated properly) - by default unfair (? - faster)
 					// native rfbClient (vncconn library)
+					vncConn.lockFramebuffer();
 					prepareTexture(vncConn.rfbClient); // private static native void prepareTexture(long rfbClient); -> native drawing function (prob from vnccanvas library)
 					vncConn.unlockFramebuffer(); // makes the resource available to other threads again
 				}
@@ -265,14 +265,29 @@ public class VncCanvas extends GLSurfaceView {
 				((GL11Ext) gl).glDrawTexfOES(x, y, 0, w, h);
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
-
-				if(doQuadView) {
-					gl.glEnable(GL10.GL_BLEND);
-					gl.glLoadIdentity();                 // Reset model-view matrix
-					// do something
-					quad.draw(gl);
-				}
-
+/*
+				//if(doQuadView) {
+				// 	gl.glEnable(GL10.GL_BLEND);
+				// 	int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
+				// 	int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
+				//
+				// 	gl.glLoadIdentity();                 // Reset model-view matrix
+				// 	gl.glTranslatex( mouseXonScreen, mouseYonScreen, 0);
+				// 	gl.glColor4f(1.0f, 0.2f, 1.0f, 0.1f);
+				//
+				// 	// simulate some anti-aliasing by drawing the shape 3x
+				// 	gl.glScalef(0.001f, 0.001f, 0.0f);
+				// 	quad.draw(gl);
+				//
+				// 	gl.glScalef(0.99f, 0.99f, 0.0f);
+				// 	quad.draw(gl);
+				//
+				// 	gl.glScalef(0.99f, 0.99f, 0.0f);
+				// 	quad.draw(gl);
+				//
+				// 	gl.glDisable(GL10.GL_BLEND);
+				// }
+*/
 				/*
 				 * do pointer highlight overlay
 				 */
@@ -323,8 +338,8 @@ public class VncCanvas extends GLSurfaceView {
 		// if true, use normal renderer, else use 3D mode
 		/*if (toggle)
 		{*/
-			glRenderer = new VNCGLRenderer();
-			setRenderer(glRenderer);
+		glRenderer = new VNCGLRenderer();
+		setRenderer(glRenderer);
 		//}
 
 		/*else
@@ -794,6 +809,7 @@ public class VncCanvas extends GLSurfaceView {
 		repaintsEnabled = true;
 	}
 
+	/**
 	//TODO: set quadview toggle
 	public void setQuadView(boolean enable) {
 		doQuadView = enable;
@@ -801,7 +817,7 @@ public class VncCanvas extends GLSurfaceView {
 
 	public final boolean getQuadView() {
 		return doQuadView;
-	}
+	}*/
 
 	public void setPointerHighlight(boolean enable) {
 		doPointerHighLight = enable;
@@ -1044,6 +1060,7 @@ public class VncCanvas extends GLSurfaceView {
 		}
 		return (float)(scale + 0.25);
 	}
+
 
 	public int getVisibleWidth() {
 		return (int)((double)getWidth() / getScale() + 0.5);

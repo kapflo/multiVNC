@@ -302,7 +302,7 @@ public class VNCConn {
 						}
 					if(ev.fur != null)
 						try {
-//							 rfb.writeFramebufferUpdateRequest(ev.fur.x, ev.fur.y, ev.fur.w, ev.fur.h, ev.fur.incremental);
+							//	rfb.writeFramebufferUpdateRequest(ev.fur.x, ev.fur.y, ev.fur.w, ev.fur.h, ev.fur.incremental);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -786,4 +786,3 @@ public class VNCConn {
 	}
 
 }
-
