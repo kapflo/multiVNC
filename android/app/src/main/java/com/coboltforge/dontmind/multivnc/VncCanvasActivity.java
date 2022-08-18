@@ -426,7 +426,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 	 * Prepare FAB popup menu.
 	 */
 	private void prepareFabMenu(PopupMenu popupMenu) {
-		Menu menu = popupMenu.getMenu();
+/*		Menu menu = popupMenu.getMenu();
 		if (touchpoints.getVisibility() == View.VISIBLE) {
 			menu.findItem(R.id.itemColorMode).setVisible(false);
 			menu.findItem(R.id.itemTogglePointerHighlight).setVisible(false);
@@ -436,7 +436,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		}
 
 		// changing pixel format without Fence extension (https://github.com/rfbproto/rfbproto/blob/master/rfbproto.rst#clientfence) not safely possible
-		menu.findItem(R.id.itemColorMode).setVisible(false);
+		menu.findItem(R.id.itemColorMode).setVisible(false);*/
 	}
 
 	@Override
@@ -448,7 +448,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		case R.id.itemInfo:
 			vncCanvas.showConnectionInfo();
 			return true;
-		case R.id.itemSpecialKeys:
+		/*case R.id.itemSpecialKeys:
 			showDialog(R.layout.metakey);
 			return true;
 		case R.id.itemColorMode:
@@ -465,9 +465,9 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 				vncCanvas.setVisibility(View.GONE);
 				touchpoints.setVisibility(View.VISIBLE);
 			}
-			return true;
-
-		case R.id.itemToggleMouseButtons:
+			return true;*/
+		// TODO: deactivate by default and get rid of button
+/*		case R.id.itemToggleMouseButtons:
 			if(mousebuttons.getVisibility()== View.VISIBLE) {
 				mousebuttons.setVisibility(View.GONE);
 				ed.putBoolean(Constants.PREFS_KEY_MOUSEBUTTONS, false);
@@ -477,9 +477,9 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 				ed.putBoolean(Constants.PREFS_KEY_MOUSEBUTTONS, true);
 			}
 			ed.commit();
-			return true;
-
-		case R.id.itemTogglePointerHighlight:
+			return true;*/
+		// TODO: deactivate by default and get rid of button
+/*		case R.id.itemTogglePointerHighlight:
 			if(vncCanvas.getPointerHighlight())
 				vncCanvas.setPointerHighlight(false);
 			else
@@ -487,19 +487,19 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 
 			ed.putBoolean(Constants.PREFS_KEY_POINTERHIGHLIGHT, vncCanvas.getPointerHighlight());
 			ed.commit();
-			return true;
-
-		case R.id.itemToggleKeyboard:
+			return true;*/
+			// TODO: deactivate by default and get rid of button
+/*		case R.id.itemToggleKeyboard:
 			toggleKeyboard();
 			return true;
-
+			// TODO: deactivate by default and get rid of button
 		case R.id.itemSendKeyAgain:
 			sendSpecialKeyAgain();
 			return true;
 		case R.id.itemSaveBookmark:
 			database.getConnectionDao().save(connection);
 			Toast.makeText(this, getString(R.string.bookmark_saved), Toast.LENGTH_SHORT).show();
-			return true;
+			return true;*/
 
 
 		// create event when button is pressed, maybe add shaders here or in VNCCanvas Activity
@@ -514,19 +514,19 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			else
 				vncCanvas.setQuadView(true);
 
-			ed.putBoolean(Constants.PREFS_KEY_QUADVIEW, vncCanvas.getPointerHighlight());
+			ed.putBoolean(Constants.PREFS_KEY_QUADVIEW, vncCanvas.getQuadView());
 			ed.commit();
 			return true;
 
 
-		case R.id.itemAbout:
+	/*	case R.id.itemAbout:
 			Intent intent = new Intent (this, AboutActivity.class);
 			this.startActivity(intent);
 			return true;
 		case R.id.itemHelp:
 			Intent helpIntent = new Intent (this, HelpActivity.class);
 			this.startActivity(helpIntent);
-			return true;
+			return true;*/
 		case R.id.itemDisconnect:
 			new AlertDialog.Builder(this)
 			.setMessage(getString(R.string.disconnect_question))
@@ -565,6 +565,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		vncCanvas.sendMetaKey(lastSentKey);
 	}
 
+	// TODO: deactivate by default and get rid of button
 	private void toggleKeyboard() {
 		InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		vncCanvas.requestFocus();

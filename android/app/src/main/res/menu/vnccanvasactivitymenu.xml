@@ -1,44 +1,45 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
+ <!--   <item
         android:id="@+id/itemSpecialKeys"
-        android:title="@string/special_keys"/>
+        android:title="@string/special_keys"/>-->
 
-    <item
+<!--    <item
         android:id="@+id/itemSendKeyAgain"
-        android:title="@string/send_key_again"/>
-
+        android:title="@string/send_key_again"/>-->
+<!--
     <item
         android:id="@+id/itemToggleKeyboard"
         android:title="@string/toggle_keyboard">
-    </item>
+    </item>-->
 
+<!--   &lt;!&ndash; Check out what FramebufferUpdate does&ndash;&gt;
     <item
         android:id="@+id/itemToggleFramebufferUpdate"
         android:title="@string/toggle_framebuffer_update">
-    </item>
+    </item>-->
 
-    <item
+<!--    <item
         android:id="@+id/itemToggleMouseButtons"
         android:title="@string/toggle_mouse_buttons">
-    </item>
+    </item>-->
 
-    <item
+<!--    <item
         android:id="@+id/itemTogglePointerHighlight"
         android:title="@string/toggle_pointer_highlight">
-    </item>
+    </item>-->
 
-    <item
+<!--    <item
         android:id="@+id/itemColorMode"
         android:title="@string/color_mode">
-    </item>
+    </item>-->
 
     <item
         android:id="@+id/itemInfo"
         android:title="@string/info">
     </item>
 
-    <item
+<!--    <item
         android:id="@+id/itemSaveBookmark"
         android:title="@string/savebookmark_button">
     </item>
@@ -49,7 +50,7 @@
 
      <item
         android:id="@+id/itemAbout"
-        android:title="@string/about"/>
+        android:title="@string/about"/>-->
 
      <item
         android:id="@+id/itemDisconnect"
