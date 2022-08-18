@@ -86,6 +86,7 @@ public class VncCanvas extends GLSurfaceView {
 
 	//whether to do pointer highlighting
 	boolean doPointerHighLight = true;
+	boolean doQuadView = true;
 
 	/**
 	 * Current state of "mouse" buttons
@@ -122,6 +123,7 @@ public class VncCanvas extends GLSurfaceView {
 		int[] textureIDs = new int[1];   // Array for 1 texture-ID
 	    private int[] mTexCrop = new int[4];
 	    GLShape circle;
+		GLShapeQuadView quad;
 
 
 		@Override
@@ -130,6 +132,7 @@ public class VncCanvas extends GLSurfaceView {
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceCreated()");
 
 			circle = new GLShape(GLShape.CIRCLE);
+			quad = new GLShapeQuadView(GLShapeQuadView.NONE);
 
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -238,10 +241,32 @@ public class VncCanvas extends GLSurfaceView {
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
 
+				if(doQuadView) {
+					gl.glEnable(GL10.GL_BLEND);
+					int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
+					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
+
+					gl.glLoadIdentity();                 // Reset model-view matrix
+					gl.glTranslatex( mouseXonScreen, mouseYonScreen, 0);
+					gl.glColor4f(0.1f, 0.2f, 1.0f, 0.1f);
+
+					// simulate some anti-aliasing by drawing the shape 3x
+					gl.glScalef(0.001f, 0.001f, 0.0f);
+					quad.draw(gl);
+
+					gl.glScalef(0.99f, 0.99f, 0.0f);
+					quad.draw(gl);
+
+					gl.glScalef(0.99f, 0.99f, 0.0f);
+					quad.draw(gl);
+
+					gl.glDisable(GL10.GL_BLEND);
+				}
+
 				/*
 				 * do pointer highlight overlay
 				 */
-				if(doPointerHighLight) {
+				if(!doPointerHighLight) {
 					gl.glEnable(GL10.GL_BLEND);
 					int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
 					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
@@ -575,6 +600,14 @@ public class VncCanvas extends GLSurfaceView {
 
 	public void enableRepaints() {
 		repaintsEnabled = true;
+	}
+
+	public void setQuadView(boolean enable) {
+		doQuadView = enable;
+	}
+
+	public final boolean getQuadView() {
+		return doQuadView;
 	}
 
 	public void setPointerHighlight(boolean enable) {

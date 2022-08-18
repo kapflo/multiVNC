@@ -509,7 +509,13 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			return true;
 		case R.id.itemToggle2D:
 			//vnccanvas ... go back to normal rendering
-			toggle2Dmode();
+			if(vncCanvas.getQuadView())
+				vncCanvas.setQuadView(false);
+			else
+				vncCanvas.setQuadView(true);
+
+			ed.putBoolean(Constants.PREFS_KEY_QUADVIEW, vncCanvas.getPointerHighlight());
+			ed.commit();
 			return true;
 
 
