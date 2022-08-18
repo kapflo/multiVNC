@@ -13,7 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class GLShapeQuadView {
 
     public static final int QUAD=0;
-    public static final int NONE=1;
+    // public static final int NONE=1;
 
     private int kind = -1;
 
@@ -27,7 +27,7 @@ public class GLShapeQuadView {
 
         float[] vertices = null;
 
-        if(kind == QUAD) {
+/*        if(kind == QUAD) {
             float[] v = {  // Vertices for the square
                     -1.0f, -1.0f,  0.0f,  // 0. left-bottom
                     1.0f, -1.0f,  0.0f,  // 1. right-bottom
@@ -35,9 +35,9 @@ public class GLShapeQuadView {
                     1.0f,  1.0f,  0.0f   // 3. right-top
             };
             vertices = v;
-        }
+        }*/
 
-        if(kind == NONE) {
+        if(kind == QUAD) {
             /*vertices = new float[circleSegments*3];
             int count = 0;
             for (float i = 0; i < 360.0f; i+=(360.0f/circleSegments)) {
@@ -75,12 +75,16 @@ public class GLShapeQuadView {
             gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
         }
 
+/*
         if(kind == NONE) {
-      /*      gl.glVertexPointer (2, GL10.GL_FLOAT , 0, vertexBuffer);
-            gl.glDrawArrays (GL10.GL_TRIANGLE_FAN, 0, circleSegments);*/
+      */
+/*      gl.glVertexPointer (2, GL10.GL_FLOAT , 0, vertexBuffer);
+            gl.glDrawArrays (GL10.GL_TRIANGLE_FAN, 0, circleSegments);*//*
+
             gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
             gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
         }
+*/
 
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         // re-able 2d textures

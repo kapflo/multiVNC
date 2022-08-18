@@ -247,7 +247,7 @@ public class VncCanvas extends GLSurfaceView {
 					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
 
 					gl.glLoadIdentity();                 // Reset model-view matrix
-					gl.glTranslatex( mouseXonScreen, mouseYonScreen, 0);
+					//gl.glTranslatex( mouseXonScreen, mouseYonScreen, 0);
 					gl.glColor4f(0.1f, 0.2f, 1.0f, 0.1f);
 
 					// simulate some anti-aliasing by drawing the shape 3x
