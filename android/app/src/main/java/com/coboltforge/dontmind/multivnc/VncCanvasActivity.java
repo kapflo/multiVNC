@@ -293,7 +293,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		mousebutton1.init(1, vncCanvas);
 		mousebutton2.init(2, vncCanvas);
 		mousebutton3.init(3, vncCanvas);
-		if(! prefs.getBoolean(Constants.PREFS_KEY_MOUSEBUTTONS, true))
+		if(! prefs.getBoolean(Constants.PREFS_KEY_MOUSEBUTTONS, false))
 			mousebuttons.setVisibility(View.GONE);
 
 		touchpoints = (TouchPointView) findViewById(R.id.touchpoints);
@@ -304,8 +304,8 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		notificationToast.setGravity(Gravity.TOP, 0, 60);
 
 
-		if(! prefs.getBoolean(Constants.PREFS_KEY_POINTERHIGHLIGHT, true))
-			vncCanvas.setPointerHighlight(false);
+		/*if(! prefs.getBoolean(Constants.PREFS_KEY_POINTERHIGHLIGHT, true))
+			vncCanvas.setPointerHighlight(false);*/
 
 
 		/*
@@ -448,6 +448,7 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		case R.id.itemInfo:
 			vncCanvas.showConnectionInfo();
 			return true;
+			// deactivate by default and get rid of button
 		/*case R.id.itemSpecialKeys:
 			showDialog(R.layout.metakey);
 			return true;
@@ -466,7 +467,8 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 				touchpoints.setVisibility(View.VISIBLE);
 			}
 			return true;*/
-		// TODO: deactivate by default and get rid of button
+
+		// deactivate by default and get rid of button
 /*		case R.id.itemToggleMouseButtons:
 			if(mousebuttons.getVisibility()== View.VISIBLE) {
 				mousebuttons.setVisibility(View.GONE);
@@ -478,7 +480,8 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			}
 			ed.commit();
 			return true;*/
-		// TODO: deactivate by default and get rid of button
+
+		// deactivate by default and get rid of button
 /*		case R.id.itemTogglePointerHighlight:
 			if(vncCanvas.getPointerHighlight())
 				vncCanvas.setPointerHighlight(false);
@@ -488,11 +491,13 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			ed.putBoolean(Constants.PREFS_KEY_POINTERHIGHLIGHT, vncCanvas.getPointerHighlight());
 			ed.commit();
 			return true;*/
-			// TODO: deactivate by default and get rid of button
+
+			// deactivate by default and get rid of button
 /*		case R.id.itemToggleKeyboard:
 			toggleKeyboard();
 			return true;
-			// TODO: deactivate by default and get rid of button
+
+			// deactivate by default and get rid of button
 		case R.id.itemSendKeyAgain:
 			sendSpecialKeyAgain();
 			return true;
@@ -509,13 +514,14 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 			return true;
 		case R.id.itemToggle2D:
 			//vnccanvas ... go back to normal rendering
-			if(vncCanvas.getQuadView())
+			/*if(vncCanvas.getQuadView())
 				vncCanvas.setQuadView(false);
 			else
 				vncCanvas.setQuadView(true);
 
 			ed.putBoolean(Constants.PREFS_KEY_QUADVIEW, vncCanvas.getQuadView());
-			ed.commit();
+			ed.commit();*/
+			toggle2Dmode();
 			return true;
 
 
@@ -551,10 +557,13 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 	private void toggle3Dmode() {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://webbacklight.web.app/?mode=3D"));
 		startActivity(browserIntent);
+		vncCanvas.setQuadView(true);
 	}
 
 	// deactivate 3D mode, use original shader
-	private void toggle2Dmode() {}
+	private void toggle2Dmode() {
+		vncCanvas.setQuadView(false);
+	}
 
 	MetaKeyBean lastSentKey;
 

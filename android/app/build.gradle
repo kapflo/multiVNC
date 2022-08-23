@@ -4,6 +4,7 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 
 repositories {
+    /* maven: popular software project management tool that helps organize project dependencies using repositories. */
     maven {
         url 'https://leiainc.jfrog.io/leiainc/gradle-release'
     }
@@ -74,4 +75,3 @@ dependencies {
 
     implementation 'com.leia:leiasdk:4.5.3'
 }
-

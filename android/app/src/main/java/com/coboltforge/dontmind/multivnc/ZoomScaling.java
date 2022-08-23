@@ -11,8 +11,8 @@ class ZoomScaling {
 	static final String TAG = "ZoomScaling";
 
 	float currentScale = 1;
-	float minimumScale = 1;
-	float maximumScale = 4;
+	float minimumScale = 0;
+	float maximumScale = 8;
 	VncCanvasActivity activity;
 
 	ZoomScaling(VncCanvasActivity activity, float minimumScale, float maximumScale) {

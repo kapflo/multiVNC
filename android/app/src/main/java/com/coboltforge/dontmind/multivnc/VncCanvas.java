@@ -36,6 +36,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
+import android.opengl.GLES20;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -54,6 +55,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.leia.android.lights.LeiaDisplayManager;
+import com.leia.android.lights.LeiaDisplayManager.BacklightMode;
+import com.leia.android.lights.LeiaSDK;
+import com.leia.android.lights.SimpleDisplayQuery;
+import com.leia.android.lights.BacklightModeListener;
 
 public class VncCanvas extends GLSurfaceView {
 	static {
@@ -86,7 +93,7 @@ public class VncCanvas extends GLSurfaceView {
 
 	//whether to do pointer highlighting
 	boolean doPointerHighLight = true;
-	boolean doQuadView = true;
+	boolean doQuadView = false; // by default false
 
 	/**
 	 * Current state of "mouse" buttons
@@ -122,17 +129,58 @@ public class VncCanvas extends GLSurfaceView {
 
 		int[] textureIDs = new int[1];   // Array for 1 texture-ID
 	    private int[] mTexCrop = new int[4];
-	    GLShape circle;
+	    //GLShape circle;
 		GLShapeQuadView quad;
 
+		//gl_FragCoord: input variable that contains the window relative coordinate (x,y,z,1/w)
+		// 				values for the fragment.
 
+		// Fragment shader for quadview output
+		public static final String fragmentShaderQuadView =
+				"//!HOOK OUTPUT													" +
+				"//!BIND HOOKED													" +
+				"																" +
+				"vec4 myColor;													" +
+				"vec2 pos;														" +
+				"float halfX;													" +
+				"float halfY;													" +
+				"float viewID;													" +
+				"																" +
+				"vec4 hook(){													" +
+				"	vec4 myColor = HOOKED_tex(0);								" +
+				"	vec2 pos = HOOKED_pos; 										" +
+				"	float halfX = pos.x / 2.0;									" +
+				"	float halfY = pos.y / 2.0;									" +
+				"	float viewID = mod(floor(gl_FragCoord.x), 4.0);				" +
+				"																" +
+				"	if(viewID < 0.5) {											" +
+				"		// fl (top-left)										" +
+				"		myColor = HOOKED_tex(vec2(halfX, halfY));				" +
+				"	} else if(viewID < 1.5) {									" +
+				"		// l (top-right)										" +
+				"		myColor = HOOKED_tex(vec2(0.5 + halfX, halfY));			" +
+				"	} else if(viewID < 2.5) {									" +
+				"		// r (bottom-left)										" +
+				"		myColor = HOOKED_tex(vec2(halfX, 0.5 + halfY));			" +
+				"	} else {													" +
+				"		// fr (bottom-right)									" +
+				"		myColor = HOOKED_tex(vec2(0.5 + halfX, 0.5 + halfY));	" +
+				"	}															" +
+				"																" +
+    			"	return myColor;												" +
+				"}																";
+
+
+		// The system calls this method once, when creating the GLSurfaceView. This method is used to
+		// perform actions that need to happen once, such as setting OpenGL environment parameters or initializing
+		// OpenGL graphic objects
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceCreated()");
 
-			circle = new GLShape(GLShape.CIRCLE);
-			quad = new GLShapeQuadView(GLShapeQuadView.QUAD);
+			//circle = new GLShape(GLShape.CIRCLE);
+			quad = new GLShapeQuadView(GLShapeQuadView.QUAD, fragmentShaderQuadView);
 
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -166,7 +214,10 @@ public class VncCanvas extends GLSurfaceView {
 			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 		}
 
-		// Call back after onSurfaceCreated() or whenever the window's size changes
+		// The system calls this method when the GLSurfaceView geometry changes, including changes in size
+		// of the GLSurfaceView or orientation of the device screen. For example, the system calls this method
+		// when the device changes from portrait to landscape orientation. This method is used to
+		// respond to changes in the GLSurfaceView container.
 		@Override
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
 
@@ -180,11 +231,12 @@ public class VncCanvas extends GLSurfaceView {
 			gl.glLoadIdentity();                 // Reset projection matrix
 			gl.glOrthox(0, width, height, 0, 0, 100);
 
-
 			gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix
 			gl.glLoadIdentity();                 // Reset
 		}
 
+		// The system calls this method on each redraw of the GLSurfaceView. This method is used as the
+		// primary execution point for drawing and re-drawing graphics objects
 		@Override
 		public void onDrawFrame(GL10 gl) {
 
@@ -199,6 +251,7 @@ public class VncCanvas extends GLSurfaceView {
 				if(vncConn.getFramebufferWidth() > 0 && vncConn.getFramebufferHeight() > 0) {
 					vncConn.lockFramebuffer();
 					prepareTexture(vncConn.rfbClient);
+
 					vncConn.unlockFramebuffer();
 				}
 
@@ -236,21 +289,46 @@ public class VncCanvas extends GLSurfaceView {
 				int y = (int) (VncCanvas.this.getHeight() < vncConn.getFramebufferHeight()*getScale() ? 0 : VncCanvas.this.getHeight()/2 - (vncConn.getFramebufferHeight()*getScale())/2);
 				int w = (int) (VncCanvas.this.getWidth() < vncConn.getFramebufferWidth()*getScale() ? VncCanvas.this.getWidth(): vncConn.getFramebufferWidth()*getScale());
 				int h =(int) (VncCanvas.this.getHeight() < vncConn.getFramebufferHeight()*getScale() ? VncCanvas.this.getHeight(): vncConn.getFramebufferHeight()*getScale());
-				gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // opaque!
+				gl.glColor4f(1.0f, 1.0f, 1.0f, 0.1f); // opaque!
 				((GL11Ext) gl).glDrawTexfOES(x, y, 0, w, h);
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
 
 				if(doQuadView) {
+					// GL10: public interface GL10, implements GL
+
 					gl.glEnable(GL10.GL_BLEND);
-					int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
-					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
+					/*int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
+					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));*/
 
+					// VncCanvas.this.getX();
+					// VncCanvas.this.getY();
+
+					/*int halfx = (int) (absoluteXPosition / 2.0);
+					int halfy = (int) (absoluteYPosition / 2.0);*/
+					// get the relative coordinates
 					gl.glLoadIdentity();                 // Reset model-view matrix
-					gl.glTranslatex( mouseXonScreen, mouseYonScreen, 0);
-					gl.glColor4f(0.1f, 0.2f, 1.0f, 0.1f);
 
-					// simulate some anti-aliasing by drawing the shape 3x
+//					gl.glTranslatex( (int)(VncCanvas.this.getWidth()/2 ), (int)(VncCanvas.this.getHeight()/2), 0);
+
+					gl.glTranslatex( 0, 0, 0);
+					gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f);
+		/*			if (VncCanvas.this.getX()  < (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() < (VncCanvas.this.getHeight() / 2.0f)) {
+						gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f);
+					}
+
+					if (VncCanvas.this.getX() >= (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() < (VncCanvas.this.getHeight() / 2.0f)) {
+						gl.glColor4f(1.0f, 0.2f, 0.3f, 0.3f);
+					}
+
+					if (VncCanvas.this.getX() < (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() >= (VncCanvas.this.getHeight() / 2.0f)) {
+						gl.glColor4f(0.1f, 0.2f, 1.0f, 0.5f);
+					}
+
+					if (VncCanvas.this.getX() >= (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() >= (VncCanvas.this.getHeight() / 2.0f)) {
+						gl.glColor4f(0.1f, 0.2f, 0.3f, 0.7f);
+					}
+*/
 					gl.glScalef(0.001f, 0.001f, 0.0f);
 					quad.draw(gl);
 
@@ -263,10 +341,11 @@ public class VncCanvas extends GLSurfaceView {
 					gl.glDisable(GL10.GL_BLEND);
 				}
 
+				// commented out pointer highlighting
 				/*
 				 * do pointer highlight overlay
 				 */
-				if(!doPointerHighLight) {
+				/*if(!doPointerHighLight) {
 					gl.glEnable(GL10.GL_BLEND);
 					int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
 					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));
@@ -286,7 +365,7 @@ public class VncCanvas extends GLSurfaceView {
 					circle.draw(gl);
 
 					gl.glDisable(GL10.GL_BLEND);
-				}
+				}*/
 
 			}
 			catch(NullPointerException e) {
@@ -610,13 +689,13 @@ public class VncCanvas extends GLSurfaceView {
 		return doQuadView;
 	}
 
-	public void setPointerHighlight(boolean enable) {
+/*	public void setPointerHighlight(boolean enable) {
 		doPointerHighLight = enable;
 	}
 
 	public final boolean getPointerHighlight() {
 		return doPointerHighLight;
-	}
+	}*/
 
 
 
@@ -841,7 +920,7 @@ public class VncCanvas extends GLSurfaceView {
 	 */
 	float getMinimumScale()
 	{
-		double scale = 0.75;
+		double scale = 0.25;
 		int displayWidth = getWidth();
 		int displayHeight = getHeight();
 		for (; scale >= 0; scale -= 0.25)
