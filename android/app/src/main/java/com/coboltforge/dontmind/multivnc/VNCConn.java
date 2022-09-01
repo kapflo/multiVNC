@@ -486,7 +486,6 @@ public class VNCConn {
 
 	public boolean sendPointerEvent(int x, int y, int modifiers, int pointerMask) {
 
-
 		if(rfbClient != 0) { // only queue if already connected
 
 			// trim coodinates

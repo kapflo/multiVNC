@@ -15,9 +15,6 @@ import com.leia.android.lights.SimpleDisplayQuery;
 import com.leia.android.lights.BacklightModeListener;
 
 public class GLShapeQuadView {
-
-    public static final int QUAD=0;
-    private int kind = -1;
     public int mProgram;
     private int fShaderId;
 
@@ -25,62 +22,22 @@ public class GLShapeQuadView {
     private FloatBuffer vertexBuffer;  // Buffer for vertex-array
 
     // Constructor - Setup the vertex buffer
-    public GLShapeQuadView(int what, String fragmentShaderCode) {
+    public GLShapeQuadView() {
 
-      /*  fShaderId = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-        kind = what;
+        float[] vertices = {  // Vertices for the square
+                -1.0f, -1.0f,  0.0f,  // 0. left-bottom
+                1.0f, -1.0f,  0.0f,  // 1. right-bottom
+                -1.0f,  1.0f,  0.0f,  // 2. left-top
+                1.0f,  1.0f,  0.0f   // 3. right-top
+        };
 
-        mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+        // Setup vertex array buffer. Vertices in float. A float has 4 bytes
+        ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
+        vbb.order(ByteOrder.nativeOrder()); // Use native byte order
+        vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float
+        vertexBuffer.put(vertices);         // Copy data into buffer
+        vertexBuffer.position(0);           // Rewind
 
-        GLES20.glAttachShader(mProgram, fShaderId); // add the fragment shader to program
-
-        GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
-        int[] linkStatus = new int[1];
-        GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, linkStatus, 0);*/
-        /*if (linkStatus[0] != GLES20.GL_TRUE) {
-            Log.e(TAG, "Could not link program: ");
-            Log.e(TAG, GLES20.glGetProgramInfoLog(mProgram));
-            GLES20.glDeleteProgram(mProgram);
-        }*/
-
-        float[] vertices = null;
-
-/*        if(kind == QUAD) {
-            float[] v = {  // Vertices for the square
-                    -1.0f, -1.0f,  0.0f,  // 0. left-bottom
-                    1.0f, -1.0f,  0.0f,  // 1. right-bottom
-                    -1.0f,  1.0f,  0.0f,  // 2. left-top
-                    1.0f,  1.0f,  0.0f   // 3. right-top
-            };
-            vertices = v;
-        }*/
-
-        if(kind == QUAD) {
-            /*vertices = new float[circleSegments*3];
-            int count = 0;
-            for (float i = 0; i < 360.0f; i+=(360.0f/circleSegments)) {
-                vertices[count++] = (float) Math.cos(Math.toRadians(i));
-                vertices[count++] = (float) Math.sin(Math.toRadians(i));
-            }*/
-            float[] v = {  // Vertices for the square
-                    -1.0f, -1.0f,  0.0f,  // 0. left-bottom
-                    1.0f, -1.0f,  0.0f,  // 1. right-bottom
-                    -1.0f,  1.0f,  0.0f,  // 2. left-top
-                    1.0f,  1.0f,  0.0f   // 3. right-top
-            };
-            vertices = v;
-        }
-
-
-
-        if(vertices != null) {
-            // Setup vertex array buffer. Vertices in float. A float has 4 bytes
-            ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
-            vbb.order(ByteOrder.nativeOrder()); // Use native byte order
-            vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float
-            vertexBuffer.put(vertices);         // Copy data into buffer
-            vertexBuffer.position(0);           // Rewind
-        }
     }
 
     public static int loadShader(int type, String shaderCode){
@@ -106,18 +63,41 @@ public class GLShapeQuadView {
     }
 
     // Render the shape
-    public void draw(GL10 gl) {
+    public void draw(GL10 gl,  String fragmentShaderCode) {
+
+        // GL_BLEND:
+        // layers are basically merged - current layer in the framebuffer is merged with the newly incoming layer
+        // exact mode of composition is controlled through the blending function, set with glBlendFunc.
+        // Each single primitive (triangle, line, point) drawn adds a new layer and immediately merges that with the bottom layer
+        GLES20.glEnable(GLES20.GL_BLEND);
+
+        fShaderId = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+
+
+        mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+
+        GLES20.glAttachShader(mProgram, fShaderId); // add the fragment shader to program
+
+        GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
+
+        int[] linkStatus = new int[1];
+        GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, linkStatus, 0);
+
+        /*if (linkStatus[0] != GLES20.GL_TRUE) {
+            Log.e(TAG, "Could not link program: ");
+            Log.e(TAG, GLES20.glGetProgramInfoLog(mProgram));
+            GLES20.glDeleteProgram(mProgram);
+        }*/
 
         // Disable 2d textures, otherwise shape won't show
         gl.glDisable(GL10.GL_TEXTURE_2D);
         // Enable vertex-array and define its buffer
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
-        if(kind == QUAD) {
-            gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-            gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
+        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
 
-        }
+
 
 /*
         if(kind == NONE) {

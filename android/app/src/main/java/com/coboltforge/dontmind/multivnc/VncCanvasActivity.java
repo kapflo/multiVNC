@@ -386,7 +386,6 @@ public class VncCanvasActivity extends Activity implements PopupMenu.OnMenuItemC
 		super.onRestart();
 	}
 
-
 	@Override
 	protected void onPause() {
 		super.onPause();

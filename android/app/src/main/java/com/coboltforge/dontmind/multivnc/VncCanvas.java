@@ -37,6 +37,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -127,6 +128,8 @@ public class VncCanvas extends GLSurfaceView {
 
 	private class VNCGLRenderer implements GLSurfaceView.Renderer {
 
+		private static final String TAG = "VNCGLRenderer";
+
 		int[] textureIDs = new int[1];   // Array for 1 texture-ID
 	    private int[] mTexCrop = new int[4];
 	    //GLShape circle;
@@ -137,39 +140,107 @@ public class VncCanvas extends GLSurfaceView {
 
 		// Fragment shader for quadview output
 		public static final String fragmentShaderQuadView =
-				"//!HOOK OUTPUT													" +
-				"//!BIND HOOKED													" +
-				"																" +
-				"vec4 myColor;													" +
-				"vec2 pos;														" +
-				"float halfX;													" +
-				"float halfY;													" +
-				"float viewID;													" +
-				"																" +
-				"vec4 hook(){													" +
-				"	vec4 myColor = HOOKED_tex(0);								" +
-				"	vec2 pos = HOOKED_pos; 										" +
-				"	float halfX = pos.x / 2.0;									" +
-				"	float halfY = pos.y / 2.0;									" +
-				"	float viewID = mod(floor(gl_FragCoord.x), 4.0);				" +
-				"																" +
-				"	if(viewID < 0.5) {											" +
-				"		// fl (top-left)										" +
-				"		myColor = HOOKED_tex(vec2(halfX, halfY));				" +
-				"	} else if(viewID < 1.5) {									" +
-				"		// l (top-right)										" +
-				"		myColor = HOOKED_tex(vec2(0.5 + halfX, halfY));			" +
-				"	} else if(viewID < 2.5) {									" +
-				"		// r (bottom-left)										" +
-				"		myColor = HOOKED_tex(vec2(halfX, 0.5 + halfY));			" +
-				"	} else {													" +
-				"		// fr (bottom-right)									" +
-				"		myColor = HOOKED_tex(vec2(0.5 + halfX, 0.5 + halfY));	" +
-				"	}															" +
-				"																" +
-    			"	return myColor;												" +
-				"}																";
+				//"//!HOOK OUTPUT																		\n" +
+				//"//!BIND HOOKED																		\n" +
+				//"																					\n" +
+				"vec4 myColor;																		\n" +
+				"vec2 pos;																			\n" +
+				"float halfX;																		\n" +
+				"float halfY;																		\n" +
+				"float viewID;																		\n" +
+				"uniform sampler2D tex;																\n" +
+				"																					\n" +
+				"vec4 hook(){																		\n" +
+				"	vec4 myColor;								 									\n" +
+				"	vec2 pos = gl_TexCoord[0].st;													\n" +
+				"	float halfX = pos.x / 2.0;														\n" +
+				"	float halfY = pos.y / 2.0;														\n" +
+				"	float viewID = mod(floor(gl_FragCoord.x), 4.0);									\n" +
+				"																					\n" +
+				"	if(viewID < 0.5) {																\n" +
+				"		// fl (top-left)															\n" +
+				//"		myColor = HOOKED_tex(vec2(halfX, halfY));									\n" +
+				"		myColor = gl_Color * texture2D(tex, vec2(halfX, halfY));					\n" +
+				"	} else if(viewID < 1.5) {														\n" +
+				"		// l (top-right)															\n" +
+				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, halfY));								\n" +
+				"		myColor = gl_Color * texture2D(tex, vec2(0.5 + halfX, halfY));				\n" +
+				"	} else if(viewID < 2.5) {														\n" +
+				"		// r (bottom-left)															\n" +
+				//"		myColor = HOOKED_tex(vec2(halfX, 0.5 + halfY));								\n" +
+				"		myColor = gl_Color * texture2D(tex, vec2(halfX, 0.5 + halfY));				\n" +
+				"	} else {																		\n" +
+				"		// fr (bottom-right)														\n" +
+				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, 0.5 + halfY));						\n" +
+				"		myColor = gl_Color * texture2D(tex, vec2(0.5 + halfX, 0.5 + halfY));		\n" +
+				"	}																				\n" +
+				"																					\n" +
+    			"	return myColor;																	\n" +
+				"}																					\n";
 
+
+		public static final String vertexShaderTest =
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n";
+
+		public static final String fragmentShaderTest =
+				"																	\n" +
+				//"in vec4 ColorIn;																	\n" +
+				"																\n" +
+				"vec3 colorA = vec3(0.149,0.141,0.912);												\n" +
+				"vec3 colorB = vec3(1.000,0.833,0.224);												\n" +
+				"vec3 colorC = vec3(0.909,0.141,0.912);												\n" +
+				"vec3 colorD = vec3(0.900,0.833,0.224);												\n" +
+				"void main() {																		\n" +
+				"	vec2 pos = gl_TexCoord[0].st;													\n" +
+				"	float halfX = pos.x / 2.0;														\n" +
+				"	float halfY = pos.y / 2.0;														\n" +
+				"	float viewID = mod(floor(gl_FragCoord.x), 4.0);									\n" +
+				"	if(viewID < 0.5) {																\n" +
+				"		// fl (top-left)															\n" +
+				//"		myColor = HOOKED_tex(vec2(halfX, halfY));									\n" +
+				"		gl_FragColor = colorA;					\n" +
+				"	} else if(viewID < 1.5) {														\n" +
+				"		// l (top-right)															\n" +
+				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, halfY));								\n" +
+				"		gl_FragColor = colorB;				\n" +
+				"	} else if(viewID < 2.5) {														\n" +
+				"		// r (bottom-left)															\n" +
+				//"		myColor = HOOKED_tex(vec2(halfX, 0.5 + halfY));								\n" +
+				"		gl_FragColor = colorC;				\n" +
+				"	} else {																		\n" +
+				"		// fr (bottom-right)														\n" +
+				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, 0.5 + halfY));						\n" +
+				"		gl_FragColor = colorD;		\n" +
+				"	}																				\n" +
+				"																					\n" +
+				"																		\n" +
+				"}																					\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n" +
+				"	\n";
 
 		// The system calls this method once, when creating the GLSurfaceView. This method is used to
 		// perform actions that need to happen once, such as setting OpenGL environment parameters or initializing
@@ -180,7 +251,7 @@ public class VncCanvas extends GLSurfaceView {
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceCreated()");
 
 			//circle = new GLShape(GLShape.CIRCLE);
-			quad = new GLShapeQuadView(GLShapeQuadView.QUAD, fragmentShaderQuadView);
+			quad = new GLShapeQuadView();
 
 			// Set color's clear-value to black
 			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -223,10 +294,14 @@ public class VncCanvas extends GLSurfaceView {
 
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceChanged()");
 
+
 			// Set the viewport (display area) to cover the entire window
 			gl.glViewport(0, 0, width, height);
 
 			// Setup orthographic projection
+			// Create a projection matrix using the geometry of the device screen in order to recalculate
+			// object coordinates so they are drawn with correct proportions.
+			// Android device screens.
 			gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
 			gl.glLoadIdentity();                 // Reset projection matrix
 			gl.glOrthox(0, width, height, 0, 0, 100);
@@ -295,6 +370,7 @@ public class VncCanvas extends GLSurfaceView {
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
 
 				if(doQuadView) {
+
 					// GL10: public interface GL10, implements GL
 
 					gl.glEnable(GL10.GL_BLEND);
@@ -311,8 +387,8 @@ public class VncCanvas extends GLSurfaceView {
 
 //					gl.glTranslatex( (int)(VncCanvas.this.getWidth()/2 ), (int)(VncCanvas.this.getHeight()/2), 0);
 
-					gl.glTranslatex( 0, 0, 0);
-					gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f);
+					gl.glTranslatex( 0, 0, 0); // get position of sent frame
+					//gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f); // fragment shader adapt every pixel
 		/*			if (VncCanvas.this.getX()  < (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() < (VncCanvas.this.getHeight() / 2.0f)) {
 						gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f);
 					}
@@ -329,14 +405,14 @@ public class VncCanvas extends GLSurfaceView {
 						gl.glColor4f(0.1f, 0.2f, 0.3f, 0.7f);
 					}
 */
-					gl.glScalef(0.001f, 0.001f, 0.0f);
-					quad.draw(gl);
+					/*gl.glScalef(0.001f, 0.001f, 0.0f);
+					quad.draw(gl, fragmentShaderTest);
 
 					gl.glScalef(0.99f, 0.99f, 0.0f);
-					quad.draw(gl);
+					quad.draw(gl, fragmentShaderTest);*/
 
 					gl.glScalef(0.99f, 0.99f, 0.0f);
-					quad.draw(gl);
+					quad.draw(gl, fragmentShaderTest);
 
 					gl.glDisable(GL10.GL_BLEND);
 				}
