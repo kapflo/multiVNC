@@ -42,8 +42,14 @@ public class GLShapeQuadView {
 
     public static int loadShader(int type, String shaderCode){
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+        // shader type:
+        // Specifies the type of shader to be created.
+        // Must be one of GL_COMPUTE_SHADER, GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER,
+        // GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, or GL_FRAGMENT_SHADER.
+
+        // glCreateShader:
+        // creates an empty shader object and returns a non-zero value by which it can be referenced.
+        // A shader object is used to maintain the source code strings that define a shader.
         int shader = GLES20.glCreateShader(type);
 
         // add the source code to the shader and compile it
@@ -52,12 +58,10 @@ public class GLShapeQuadView {
         int[] compiled = new int[1];
         GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
 
-    /*    if (compiled[0] == 0) {
-            Log.e(TAG, "Could not compile shader " + type + ":");
-            Log.e(TAG, GLES20.glGetShaderInfoLog(shader));
-            GLES20.glDeleteShader(shader);
-            shader = 0;
-        }*/
+        if (compiled[0] == 0) {
+            Log.d("Load Shader Failed", "Compilation\n" + GLES20.glGetShaderInfoLog(shader));
+            return 0;
+        }
 
         return shader;
     }
@@ -72,7 +76,6 @@ public class GLShapeQuadView {
         GLES20.glEnable(GLES20.GL_BLEND);
 
         fShaderId = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
 
@@ -96,8 +99,6 @@ public class GLShapeQuadView {
 
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
         gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexBuffer.capacity() / 3);
-
-
 
 /*
         if(kind == NONE) {
