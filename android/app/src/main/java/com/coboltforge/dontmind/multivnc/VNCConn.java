@@ -73,6 +73,8 @@ public class VNCConn {
     public static final int MOUSE_BUTTON_SCROLL_UP = 8;
     public static final int MOUSE_BUTTON_SCROLL_DOWN = 16;
 
+
+
     private class OutputEvent {
 
     	public OutputEvent(int x, int y, int modifiers, int pointerMask) {
@@ -485,6 +487,7 @@ public class VNCConn {
 
 
 	public boolean sendPointerEvent(int x, int y, int modifiers, int pointerMask) {
+
 
 		if(rfbClient != 0) { // only queue if already connected
 

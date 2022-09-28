@@ -138,19 +138,22 @@ public class VncCanvas extends GLSurfaceView {
 		//gl_FragCoord: input variable that contains the window relative coordinate (x,y,z,1/w)
 		// 				values for the fragment.
 
+
+
 		// Fragment shader for quadview output
 		public static final String fragmentShaderQuadView =
 				//"//!HOOK OUTPUT																		\n" +
 				//"//!BIND HOOKED																		\n" +
 				//"																					\n" +
-				"vec4 myColor;																		\n" +
-				"vec2 pos;																			\n" +
+				"in vec3 ex_TexCoord;																		\n" +
+				"out vec4 out_Color;																			\n" +
+
 				"float halfX;																		\n" +
 				"float halfY;																		\n" +
 				"float viewID;																		\n" +
 				"uniform sampler2D tex;																\n" +
 				"																					\n" +
-				"vec4 hook(){																		\n" +
+				"void main{																		\n" +
 				"	vec4 myColor;								 									\n" +
 				"	vec2 pos = gl_TexCoord[0].st;													\n" +
 				"	float halfX = pos.x / 2.0;														\n" +
@@ -160,24 +163,23 @@ public class VncCanvas extends GLSurfaceView {
 				"	if(viewID < 0.5) {																\n" +
 				"		// fl (top-left)															\n" +
 				//"		myColor = HOOKED_tex(vec2(halfX, halfY));									\n" +
-				"		myColor = gl_Color * texture2D(tex, vec2(halfX, halfY));					\n" +
+				"		out_Color = gl_Color * texture2D(tex, vec2(halfX, halfY));					\n" +
 				"	} else if(viewID < 1.5) {														\n" +
 				"		// l (top-right)															\n" +
 				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, halfY));								\n" +
-				"		myColor = gl_Color * texture2D(tex, vec2(0.5 + halfX, halfY));				\n" +
+				"		out_Color = gl_Color * texture2D(tex, vec2(0.5 + halfX, halfY));				\n" +
 				"	} else if(viewID < 2.5) {														\n" +
 				"		// r (bottom-left)															\n" +
 				//"		myColor = HOOKED_tex(vec2(halfX, 0.5 + halfY));								\n" +
-				"		myColor = gl_Color * texture2D(tex, vec2(halfX, 0.5 + halfY));				\n" +
+				"		out_Color = gl_Color * texture2D(tex, vec2(halfX, 0.5 + halfY));				\n" +
 				"	} else {																		\n" +
 				"		// fr (bottom-right)														\n" +
 				//"		myColor = HOOKED_tex(vec2(0.5 + halfX, 0.5 + halfY));						\n" +
-				"		myColor = gl_Color * texture2D(tex, vec2(0.5 + halfX, 0.5 + halfY));		\n" +
+				"		out_Color = gl_Color * texture2D(tex, vec2(0.5 + halfX, 0.5 + halfY));		\n" +
 				"	}																				\n" +
 				"																					\n" +
-    			"	return myColor;																	\n" +
+    			"																					\n" +
 				"}																					\n";
-
 
 		public static final String vertexShaderTest =
 				"	\n" +
@@ -230,15 +232,6 @@ public class VncCanvas extends GLSurfaceView {
 				"																					\n" +
 				"																		\n" +
 				"}																					\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
-				"	\n" +
 				"	\n" +
 				"	\n";
 
@@ -294,7 +287,6 @@ public class VncCanvas extends GLSurfaceView {
 
 			if(Utils.DEBUG()) Log.d(TAG, "onSurfaceChanged()");
 
-
 			// Set the viewport (display area) to cover the entire window
 			gl.glViewport(0, 0, width, height);
 
@@ -314,6 +306,8 @@ public class VncCanvas extends GLSurfaceView {
 		// primary execution point for drawing and re-drawing graphics objects
 		@Override
 		public void onDrawFrame(GL10 gl) {
+
+			vncConn.sendPointerEvent(0, 0, 0, 0);
 
 			// TODO optimize: texSUBimage ?
 			// pbuffer: http://blog.shayanjaved.com/2011/05/13/android-opengl-es-2-0-render-to-texture/
@@ -369,19 +363,19 @@ public class VncCanvas extends GLSurfaceView {
 
 				if(Utils.DEBUG()) Log.d(TAG, "drawing to screen: x " + x + " y " + y + " w " + w + " h " + h);
 
-				if(doQuadView) {
+				/*if(doQuadView) {
 
 					// GL10: public interface GL10, implements GL
 
 					gl.glEnable(GL10.GL_BLEND);
-					/*int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
-					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));*/
+					*//*int mouseXonScreen = (int)(getScale()*(mouseX-absoluteXPosition));
+					int mouseYonScreen = (int)(getScale()*(mouseY-absoluteYPosition));*//*
 
 					// VncCanvas.this.getX();
 					// VncCanvas.this.getY();
 
-					/*int halfx = (int) (absoluteXPosition / 2.0);
-					int halfy = (int) (absoluteYPosition / 2.0);*/
+					*//*int halfx = (int) (absoluteXPosition / 2.0);
+					int halfy = (int) (absoluteYPosition / 2.0);*//*
 					// get the relative coordinates
 					gl.glLoadIdentity();                 // Reset model-view matrix
 
@@ -389,7 +383,7 @@ public class VncCanvas extends GLSurfaceView {
 
 					gl.glTranslatex( 0, 0, 0); // get position of sent frame
 					//gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f); // fragment shader adapt every pixel
-		/*			if (VncCanvas.this.getX()  < (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() < (VncCanvas.this.getHeight() / 2.0f)) {
+		*//*			if (VncCanvas.this.getX()  < (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() < (VncCanvas.this.getHeight() / 2.0f)) {
 						gl.glColor4f(0.1f, 1.0f, 0.3f, 0.1f);
 					}
 
@@ -404,18 +398,18 @@ public class VncCanvas extends GLSurfaceView {
 					if (VncCanvas.this.getX() >= (VncCanvas.this.getWidth() / 2.0f) && VncCanvas.this.getY() >= (VncCanvas.this.getHeight() / 2.0f)) {
 						gl.glColor4f(0.1f, 0.2f, 0.3f, 0.7f);
 					}
-*/
-					/*gl.glScalef(0.001f, 0.001f, 0.0f);
+*//*
+					*//*gl.glScalef(0.001f, 0.001f, 0.0f);
 					quad.draw(gl, fragmentShaderTest);
 
 					gl.glScalef(0.99f, 0.99f, 0.0f);
-					quad.draw(gl, fragmentShaderTest);*/
+					quad.draw(gl, fragmentShaderTest);*//*
 
 					gl.glScalef(0.99f, 0.99f, 0.0f);
 					quad.draw(gl, fragmentShaderTest);
 
 					gl.glDisable(GL10.GL_BLEND);
-				}
+				}*/
 
 				// commented out pointer highlighting
 				/*
